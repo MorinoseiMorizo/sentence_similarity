@@ -1,6 +1,7 @@
 import chainer
 import chainer.functions as F
 import chainer.links as L
+import numpy as np
 from chainer import report
 
 class EncDecModel(chainer.Chain):
@@ -41,7 +42,8 @@ class EncDecModel(chainer.Chain):
         for words in src_samples_array:
             e_h0 = self.enc_embed(words)
             e_h1 = self.enc_lstm_1(e_h0)
-            self.enc_lstm_2(e_h1)
+            e_h2 = self.enc_lstm_2(e_h1)
+        return e_h2
 
     def _init_decoder(self, e_h1, e_c1, e_h2, e_c2):
         d_h1 = self.enc_dec_1_h(e_h1)
@@ -110,3 +112,9 @@ class EncDecModel(chainer.Chain):
         ret = list(map(list, zip(*z)))
 
         return trg_samples, ret
+
+    def forward_get_sentence_vector(self, src_samples, trg_samples):
+        self.reset_state()
+        sentence_vector = self._encode(src_samples)
+
+        return sentence_vector
