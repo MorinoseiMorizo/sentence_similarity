@@ -6,7 +6,6 @@ from batch_iterator import BatchIterator
 from sequential_updater import SequentialUpdater
 from mt_evaluator import MT_Evaluator
 from enc_dec_model import EncDecModel
-from attentional_model import AttentionalModel
 import argparse
 
 # Routine to rewrite the result dictionary of LogReport to add perplexity
@@ -25,10 +24,6 @@ class adjust_learning_rate(training.Extension):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', '-m', type=str, required=True,
-                        help="Training model. \
-                              \'encdec\' for Encoder Decoder Model, \
-                              \'attention\' for Attentional Enc-Dec Model.")
     parser.add_argument('--source', type=str, required=True,
                         help='Source corpus')
     parser.add_argument('--target', type=str, required=True,
@@ -47,7 +42,7 @@ def main():
                         help='Size of the each hidden layer')
     parser.add_argument('--batchsize', '-b', type=int, default=128,
                         help='Number of examples in each mini-batch')
-    parser.add_argument('--test_batchsize', type=int, default=100,
+    parser.add_argument('--test_batchsize', type=int, default=1,
                         help='Number of examples in each mini-batch for testing')
     parser.add_argument('--epoch', '-e', type=int, default=39,
                         help='Number of sweeps over the dataset to train')
@@ -63,10 +58,6 @@ def main():
                         help='If True, train with a smaller dataset')
     parser.set_defaults(test=False)
     args = parser.parse_args()
-
-    if args.model not in ["encdec", "attentional"]:
-        print("specify --model option correctly")
-        return -1
 
     # make an iterator for train
     f_lines = []
@@ -98,10 +89,7 @@ def main():
 
     test_iter = BatchIterator(test_f_lines, test_e_lines, args.test_batchsize, repeat=False)
 
-    if args.model == "encdec":
-        model = EncDecModel(args.srcvocab, args.trgvocab, args.embed, args.hidden)
-    if args.model == "attentional":
-        model = AttentionalModel(args.srcvocab, args.trgvocab, args.embed, args.hidden)
+    model = EncDecModel(args.srcvocab, args.trgvocab, args.embed, args.hidden)
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()  # make the GPU current
@@ -126,10 +114,10 @@ def main():
     ), trigger=(interval, 'iteration'))
     trainer.extend(MT_Evaluator(test_iter, model, device=args.gpu, eval_func=model.forward_test, out_dir=args.out), trigger=(1, 'epoch'))
     trainer.extend(extensions.ProgressBar(update_interval=1))
-    #trainer.extend(extensions.snapshot_object(
-    #    model, 'model_epoch_{.updater.epoch}'))
+    trainer.extend(extensions.snapshot_object(
+        model, 'model_epoch_{.updater.epoch}'))
     if args.resume:
-        chainer.serializers.load_npz(args.resume, trainer)
+        chainer.serializers.load_npz(args.resume, model)
 
     trainer.run()
 
