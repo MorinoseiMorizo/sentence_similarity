@@ -13,7 +13,8 @@ class BatchIterator(chainer.dataset.Iterator):
         self.is_new_epoch = False
         self.repeat = repeat
         self.reverse = reverse
-        self.offsets = [i * len(source_corpus) // batch_size for i in range(batch_size)]
+        self.offsets = [i * self.length // batch_size for i in range(batch_size)]
+        self.max_iteration = self.length // batch_size
         self.iteration = 0
 
     def fill_batch(self, samples, reverse=True):
@@ -62,8 +63,10 @@ class BatchIterator(chainer.dataset.Iterator):
         return self.iteration * self.batch_size / self.data_size
 
     def get_samples(self, dataset):
-        return [dataset[(offset + self.iteration) % len(dataset)]
-                for offset in self.offsets]
+    #    return [dataset[(offset + self.iteration) % len(dataset)]
+    #            for offset in self.offsets]
+        it = self.iteration % self.max_iteration
+        return dataset[(self.batch_size*it):(self.batch_size*(1+it))]
 
     def serialize(self, serializer):
         self.iteration = serializer('iteration', self.iteration)
