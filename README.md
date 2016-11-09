@@ -80,7 +80,7 @@ result ディレクトリ内に学習したモデルと，テストセットを�
 
 もし必要ならBLEUを測る．(1の部分はepoch数なので，2, 3と変更して良い)  
 ```
-python3 bleu.py python bleu.py --ref data/id/test.id.en --hyp result/1  
+python3 bleu.py --ref /path/to/test.id.en --hyp result/1  
 ```
 
 #### トレーニングセットのベクトルを計算する
