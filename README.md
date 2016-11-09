@@ -33,46 +33,46 @@ chainer と KyTea を使えるようにしておいてください．
 詳細は割愛  
 
 日本語はKyTeaを使って単語分割する  
-    `/path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/train.ja > /path/to/train.tok.ja`  
-    `/path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/test.ja > /path/to/test.tok.ja`  
+    /path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/train.ja > /path/to/train.tok.ja  
+    /path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/test.ja > /path/to/test.tok.ja  
 
 #### Vocabulary を作成する
 NMTでは使用する語彙の数を制限する必要があります．  
 今回はコーパス内の頻度順に語彙を作成して，低頻度の語については未知語として処理します．  
 また，今回は語彙数を1万語とします．  
 
-    `python3 make_vocab.py --input /path/to/train.tok.ja --output /path/to/vocab.ja --size 10000`  
-    `python3 make_vocab.py --input /path/to/train.tok.en --output /path/to/vocab.en --size 10000`  
+    python3 make_vocab.py --input /path/to/train.tok.ja --output /path/to/vocab.ja --size 10000  
+    python3 make_vocab.py --input /path/to/train.tok.en --output /path/to/vocab.en --size 10000  
 
 #### ID化したコーパスを作成する
 先程作成した Vocabulary を基に，ID化したコーパスファイルを作成します．  
 train と test の両方を処理します．  
 
-    `python3 apply_vocab.py --input /path/to/train.ja --output /path/to/train.id.ja --vocab /path/to/vocab.ja`  
-    `python3 apply_vocab.py --input /path/to/train.en --output /path/to/train.id.en --vocab /path/to/vocab.en`  
-    `python3 apply_vocab.py --input /path/to/test.ja --output /path/to/test.id.ja --vocab /path/to/vocab.ja`  
-    `python3 apply_vocab.py --input /path/to/test.ja --output /path/to/test.id.en --vocab /path/to/vocab.en`  
+    python3 apply_vocab.py --input /path/to/train.ja --output /path/to/train.id.ja --vocab /path/to/vocab.ja  
+    python3 apply_vocab.py --input /path/to/train.en --output /path/to/train.id.en --vocab /path/to/vocab.en  
+    python3 apply_vocab.py --input /path/to/test.ja --output /path/to/test.id.ja --vocab /path/to/vocab.ja  
+    python3 apply_vocab.py --input /path/to/test.ja --output /path/to/test.id.en --vocab /path/to/vocab.en  
 
 #### Encoder Decoder モデル学習
 実際にモデルを学習する．  
 
-    `python3 train.py --source /path/to/train.id.ja --target /path/to/train.id.en --source_test /path/to/test.id.ja --target_test /path/to/test.id.en --srcvocab 10000 --trgvocab 10000 --embed 1024 --hidden 1024 --batchsize 128 --test_batchsize 1 --out ./result --gpu 0`  
+    python3 train.py --source /path/to/train.id.ja --target /path/to/train.id.en --source_test /path/to/test.id.ja --target_test /path/to/test.id.en --srcvocab 10000 --trgvocab 10000 --embed 1024 --hidden 1024 --batchsize 128 --test_batchsize 1 --out ./result --gpu 0  
 
 result ディレクトリ内に学習したモデルと，テストセットを翻訳したものができる．  
 
 もし必要ならBLEUを測る．(1の部分はepoch数なので，2, 3と変更して良い)  
-    `python3 bleu.py python bleu.py --ref data/id/test.id.en --hyp result/1`  
+    python3 bleu.py python bleu.py --ref data/id/test.id.en --hyp result/1  
 
 #### トレーニングセットのベクトルを計算する
 比較対象とする文のベクトルを計算する．  
 
-    `python3 vector_representation.py --model_file /path/to/result/model_epoch_30 --source /path/to/train.id.ja > /path/to/train.vec.ja`  
+    python3 vector_representation.py --model_file /path/to/result/model_epoch_30 --source /path/to/train.id.ja > /path/to/train.vec.ja  
 
 ### 類似度計算
 学習したモデルと事前に計算した文ベクトルを使って，  
 与えられたテスト文に意味的に近い文を見つけます．  
 
-    `echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin -notags -wsconst D | python apply_vocab.py --input /dev/stdin --output /dev/stdout --vocab /path/to/vocab.ja | python check_similar_sentence.py --vector /path/to/train.vec.ja --sentence /path/to/train.ja --model_file /path/to/result/model_epoch_30`  
+    echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin -notags -wsconst D | python apply_vocab.py --input /dev/stdin --output /dev/stdout --vocab /path/to/vocab.ja | python check_similar_sentence.py --vector /path/to/train.vec.ja --sentence /path/to/train.ja --model_file /path/to/result/model_epoch_30  
 
 テスト文に近い文が表示される．  
 左に表示されるのはスコア (文ベクトルとのユークリッド距離)．  
@@ -91,4 +91,4 @@ result ディレクトリ内に学習したモデルと，テストセットを�
 #### サンプルファイルを使う場合
 もしサンプルを動かす場合こうなる．  
 
-    `echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin -notags -wsconst D | python apply_vocab.py --input /dev/stdin --output /dev/stdout --vocab ./data/vocab/vocab.10000.ja | python check_similar_sentence.py --vector ./sample/vector_representation/train.vec.ja --sentence ./data/raw/train.ja --model_file ./sample/sample_model`  
+    echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin -notags -wsconst D | python apply_vocab.py --input /dev/stdin --output /dev/stdout --vocab ./data/vocab/vocab.10000.ja | python check_similar_sentence.py --vector ./sample/vector_representation/train.vec.ja --sentence ./data/raw/train.ja --model_file ./sample/sample_model  
