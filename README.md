@@ -33,8 +33,8 @@ chainer と KyTea を使えるようにしておいてください．
 詳細は割愛  
 
 日本語はKyTeaを使って単語分割する  
-    /path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/train.ja > /path/to/train.tok.ja  
-    /path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/test.ja > /path/to/test.tok.ja  
+     /path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/train.ja > /path/to/train.tok.ja  
+     /path/to/kytea -model /path/to/model.bin -notags -wsconst D < /path/to/test.ja > /path/to/test.tok.ja  
 
 #### Vocabulary を作成する
 NMTでは使用する語彙の数を制限する必要があります．  
