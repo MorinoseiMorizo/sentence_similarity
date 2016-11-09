@@ -1,6 +1,6 @@
 # Sentence Similarity Checker using Encoder Decoder Model
 by Makoto Morishita
-(morishita.makoto.mb1 [[at]] is.nait.jp)
+(morishita.makoto.mb1 [[at]] is.naist.jp)
 
 ## これは何?
 ニューラル機械翻訳 (NMT) のモデルとして有名な
