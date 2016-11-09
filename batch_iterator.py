@@ -63,10 +63,10 @@ class BatchIterator(chainer.dataset.Iterator):
         return self.iteration * self.batch_size / self.data_size
 
     def get_samples(self, dataset):
-    #    return [dataset[(offset + self.iteration) % len(dataset)]
-    #            for offset in self.offsets]
-        it = self.iteration % self.max_iteration
-        return dataset[(self.batch_size*it):(self.batch_size*(1+it))]
+        return [dataset[(offset + self.iteration) % len(dataset)]
+                for offset in self.offsets]
+    #    it = self.iteration % self.max_iteration
+    #    return dataset[(self.batch_size*it):(self.batch_size*(1+it))]
 
     def serialize(self, serializer):
         self.iteration = serializer('iteration', self.iteration)
