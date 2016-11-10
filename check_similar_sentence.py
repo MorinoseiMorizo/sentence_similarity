@@ -3,23 +3,26 @@ from batch_iterator import BatchIterator
 from enc_dec_model import EncDecModel
 from vector_representation import get_sentence_vector
 import numpy as np
+import scipy.spatial.distance as dis
 import argparse
 import sys
 
 def euclidean_distance(a, b):
     return np.linalg.norm(a-b)
 
+def cosine_similarity(a, b):
+    return dis.cosine(a, b)
+
 def find_top_n_similar_sentences(training_sentence_vectors, test_sentence_vector, training_sentences):
     distances = []
     for sentence_vector, sentence in zip(training_sentence_vectors, training_sentences):
-        distances.append((euclidean_distance(sentence_vector, test_sentence_vector), sentence))
+        distances.append((cosine_similarity(sentence_vector, test_sentence_vector), sentence))
 
     distances = sorted(distances, key=lambda x: x[0])
     
     for score, sentence in distances[:10]:
         cat_sentence = " ".join(sentence)
         print(str(score) + "\t" + cat_sentence)
-
 
 def make_batch_then_get_sentence_vector(sentence, model):
     test_iter = BatchIterator([sentence], [""], 1, repeat=False)
