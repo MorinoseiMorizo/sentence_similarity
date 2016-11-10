@@ -116,5 +116,5 @@ echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin
 もしサンプルを動かす場合こうなる．  
 
 ```
-echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin -notags -wsconst D | python apply_vocab.py --input /dev/stdin --output /dev/stdout --vocab ./data/vocab/vocab.10000.ja | python check_similar_sentence.py --vector ./sample/vector_representation/train.vec.ja --sentence ./data/raw/train.ja --model_file ./sample/sample_model  
+echo "何か飲み物をください" | /path/to/kytea -model /path/to/model.bin -notags -wsconst D | python apply_vocab.py --input /dev/stdin --output /dev/stdout --vocab ./data/vocab/vocab.10000.ja | python check_similar_sentence.py --vector ./sample/train.vec.ja --sentence ./data/raw/train.ja --model_file ./sample/sample_model  
 ```
