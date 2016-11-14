@@ -88,7 +88,7 @@ python3 bleu.py --ref /path/to/test.id.en --hyp result/1
 比較対象とする文のベクトルを計算する．  
 
 ```
-python3 vector_representation.py --model_file /path/to/result/model_epoch_30 --source /path/to/train.id.ja > /path/to/train.vec.ja  
+python3 vector_representation.py --model_file /path/to/result/model_epoch_30 --source /path/to/train.id.ja --srcvocab 10000 --trgvocab 10000 --embed 1024 --hidden 1024 > /path/to/train.vec.ja  
 ```
 
 ### 類似度計算
