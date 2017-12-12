@@ -40,7 +40,7 @@ sample ディレクトリができます．
 その場合は下記の手順は飛ばして類似度計算まで進んでください．  
 
 #### パラレルコーパスを単語分割する
-英語はStanford Segmenterとか，，，  
+英語はMoses tokenizer (https://github.com/moses-smt/mosesdecoder/blob/master/scripts/tokenizer/tokenizer.perl) を使って単語分割してください．
 詳細は割愛  
 
 日本語はKyTeaを使って単語分割する  
